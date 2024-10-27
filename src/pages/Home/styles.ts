@@ -38,7 +38,7 @@ export const BaseCountdownButton = styled.button`
   }
 `
 
-export const StarCountdownButton = styled(BaseCountdownButton)`
+export const StartCountdownButton = styled(BaseCountdownButton)`
   background: ${(props) => props.theme['green-500']};
 `
 
