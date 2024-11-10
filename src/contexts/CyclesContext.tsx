@@ -1,4 +1,4 @@
-import { createContext, useState } from 'react'
+import { createContext, useState, useReducer } from 'react'
 
 interface createCycleData {
   task: string
@@ -34,7 +34,14 @@ interface CyclesContextProviderProps {
 export function CyclesContextProvider({
   children,
 }: CyclesContextProviderProps) {
-  const [cycles, setCycles] = useState<Cycle[]>([])
+  const [cycles, dispatch] = useReducer((state: Cycle[], action: any) => {
+    if (action.type === 'ADD_NEW_CYCLE') {
+      return [...state, action.payload]
+    }
+
+    return state
+  }, [])
+
   const [activeCycleId, setActiveCycleId] = useState<string | null>(null)
   const [amountSecondsPassed, setAmountSecondsPassed] = useState(0)
 
@@ -44,7 +51,8 @@ export function CyclesContextProvider({
     setAmountSecondsPassed(seconds)
   }
   function markCurrentCycleAsFinished() {
-    setCycles((state) =>
+    dispatch({ type: 'MARK_FINISH_CYCLE', payload: activeCycleId })
+    /* setCycles((state) =>
       state.map((cycle) => {
         if (cycle.id === activeCycleId) {
           return { ...cycle, finishedDate: new Date() }
@@ -52,7 +60,7 @@ export function CyclesContextProvider({
           return cycle
         }
       }),
-    )
+    ) */
   }
 
   function createNewCycle(data: createCycleData) {
@@ -65,13 +73,16 @@ export function CyclesContextProvider({
       startDate: new Date(),
     }
 
-    setCycles((state) => [...state, newCycle])
+    dispatch({ type: 'ADD_NEW_CYCLE', payload: newCycle })
+
+    // setCycles((state) => [...state, newCycle])
     setActiveCycleId(id)
     setAmountSecondsPassed(0)
   }
 
   function interruptCurrentCycle() {
-    setCycles((state) =>
+    dispatch({ type: 'INTERRUPT_CYCLE', payload: activeCycleId })
+    /* setCycles((state) =>
       state.map((cycle) => {
         if (cycle.id === activeCycleId) {
           return { ...cycle, interruptedDate: new Date() }
@@ -79,7 +90,7 @@ export function CyclesContextProvider({
           return cycle
         }
       }),
-    )
+    ) */
     setActiveCycleId(null)
   }
 
